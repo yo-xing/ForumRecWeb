@@ -4,3 +4,4 @@ gunicorn
 requests_oauthlib
 lightfm
 authlib
+stackapi
