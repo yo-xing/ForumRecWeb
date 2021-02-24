@@ -1,4 +1,6 @@
 flask
 pandas
 gunicorn
-xgboost
+requests_oauthlib
+pickle
+lightfm
