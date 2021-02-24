@@ -3,3 +3,4 @@ pandas
 gunicorn
 requests_oauthlib
 lightfm
+authlib
