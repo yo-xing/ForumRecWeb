@@ -1,5 +1,5 @@
 import flask
-# import requests_oauthlib
+import requests_oauthlib
 import requests
 import pickle
 
@@ -8,6 +8,7 @@ import pickle
 #     model = pickle.load(f)
 
 AUTH_BASE_URL = "https://stackexchange.com/oauth/dialog?client_id=19673&scope=&redirect_uri=http://localhost:5000/"
+CLIENT_ID = "19673"
 
 app = flask.Flask(__name__, template_folder='templates')
 
@@ -26,6 +27,17 @@ def main():
         
 
     # return(flask.render_template('main.html'))
+
+@app.route('/login')
+def login():
+    superuser = requests_oauthlib.OAuth2Session(CLIENT_ID, redirect_uri="http://localhost:5000/callback")
+    auth_url, _ = superuser.authorization_url(AUTH_BASE_URL)
+
+    return flask.redirect(auth_url)
+
+@app.route('/callback')
+def callback():
+    superuser = requests_oauthlib.OAuth2Session(CLIENT_ID)
 
 @app.route('/', methods=['GET', 'POST'])
 def get_data():
