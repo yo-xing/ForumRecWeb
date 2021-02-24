@@ -2,5 +2,4 @@ flask
 pandas
 gunicorn
 requests_oauthlib
-pickle
 lightfm
