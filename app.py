@@ -19,12 +19,19 @@ TOKEN_URL = "https://stackoverflow.com/oauth/access_token/json"
 CLIENT_ID = "19673"
 CLIENT_SECRET =  "Ftm5ijUJpb7TUEb3jBNTyw(("
 SECRET_KEY = "nIFln5DrNi7grh*o22xAIw(("
+USER_VALS = None
 
 app = flask.Flask(__name__, template_folder='templates')
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    return flask.render_template('main.html')
+    if flask.request.method == 'GET':
+        return flask.render_template('main.html')
+    
+    if flask.request.method == 'POST':
+        answers = flask.request.form.getlist("question")
+        userId = USER_VALS['user_id']
+        return flask.render_template('main.html', userId=userId, userItems=USER_VALS, ans=answers)
 
 
     # Click get recommendations
@@ -57,10 +64,24 @@ def callback():
     me = SITE.fetch('me', access_token=token['access_token'])
 
     # Keep user_id, profile_image, display_name
-    vals = flask.json.jsonify(me['items'])
-    # userId = vals['user_id']
+    global USER_VALS
+    USER_VALS = me['items'][0]
+    userId = USER_VALS['user_id']
 
-    return flask.render_template('main.html', userId=me)
+    return flask.render_template('main.html', userId=userId, userItems=USER_VALS)
+
+@app.route('/recommendations')
+def recommendations():
+    userId = USER_VALS['user_id']
+    top_questions_list = ['Yes', 'Sir', 'We', 'Are', 'Doing', 'It']
+    user_questions_data = {'New': [1298302, 1629649], 'Previous':[1629646]}
+    all_questions_data = {1298302: ['How to access my Raspberry Pi remotely?', 'https://superuser.com/questions/1298302'], 
+            1629649: ['Recovering a deleted text message on Android', 'https://superuser.com/questions/1629649'],
+            1629646: ['What is the regex to find and move', 'https://superuser.com/questions/1629646']}
+    data_avail = True
+
+    return flask.render_template('main.html', userId=userId, userItems=USER_VALS, coldStart=True, userData=data_avail,
+                                    topQList=top_questions_list, userQList=user_questions_data, qList=all_questions_data)
 
 @app.route('/', methods=['GET', 'POST'])
 def get_data():

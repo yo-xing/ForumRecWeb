@@ -4,44 +4,137 @@
     </style>
     <head>
         <title>ForumRec</title>
-        <h1 id="title">ForumRec</h1>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </head>
-    <div class="logged">
-        {% if userId %}
-            <p>{{ userId }}</p>
-        {% else %}
-            <a href="/login">Login with StackExchange: SuperUser</a>
-        {% endif %}
-    </div>
-
-    <div class="recommendations">
-        {% if userId %}
-            <!-- Tab links Needs JavaScript -->
-            <div class="tab">
-                <button class="tablinks" onclick="openCity(event, 'New')">New Questions</button>
-                <button class="tablinks" onclick="openCity(event, 'Previous')">Previous Question</button>
+    <body id="content">
+        <header id="header-container">
+            <h1 id="projectTitle">ForumRec</h1>
+            <div class="redirect-container">
+                <div id="logged">
+                    {% if userId %}
+                        <a href="https://superuser.com/users/{{userId}}">
+                            <img src="{{ userItems['profile_image'] }}" alt="{{ userItems['display_name'] }}" id="profile"/>
+                        </a>
+                    {% else %}
+                        <a href="/login">Login</a>
+                    {% endif %}
+                </div>
+                <div id="website">
+                    <a href="jasrajjohl.github.io">Visit Main Website</a>
+                </div>
             </div>
 
-            <!-- Tab content -->
-            <div id="New" class="tabcontent">
-                <h3>New Questions</h3>
-                <p>{{ recommends['New'] }}</p>
-            </div>
-        
-            <div id="Previous" class="tabcontent">
-                <h3>Previous Questions</h3>
-                <p>{{ recommends['Previous'] }}</p>
-                
-            </div>
-        {% elif uals %}
-            <h1 id="getRec">Get Your Recommendations Right Now!</h1>
-        {% else %}
-            <h1 id="getRec">Please Login First</h1>
-        {% endif %}
-    </div>
+        </header>
+        <main id="middle">
 
-    <!-- <input type="submit" name="submit_button" value="Do Something">
-    <input type="submit" name="submit_button" value="Do Something Else"> -->
+            {% if userData %}
+                <section id="recommendations">
+                        <!-- Tab links Needs JavaScript -->
+                        <div class="tab">
+                            <button class="tablinks" id="defaultTab" onclick="openTab(event, 'New')">New Questions</button>
+                            <button class="tablinks" onclick="openTab(event, 'Previous')">Previous Question</button>
+                        </div>
 
+                        <!-- Tab content -->
+                        <div id="New" class="tabcontent">
+                            <h3>New Questions</h3>
+                            {% for i in userQList['New'] %}
+                                <p class="questionRec">
+                                    <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
+                                </p>
+                            {% endfor %}
 
+                        </div>
+                    
+                        <div id="Previous" class="tabcontent">
+                            <h3>Previous Questions</h3>
+                            {% for i in userQList['Previous'] %}
+                                <p class="questionRec">
+                                    <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
+                                </p>
+                            {% endfor %}
+                            
+                        </div>
+                </section>
+
+            {% elif coldStart %}
+                <section id="cold-start">
+                    <h3>Looks like you are new to SuperUser!</h3>
+                    <p>Choose at least 10 questions from the following pages to help us get an idea of your knowledge base</p>
+                    <p>You must choose 10 questions to submit and you cannot go back on pages, so make sure to be sure of your answers before you hit next and get to the last page!</p>
+                    <form action="{{ url_for('main') }}" method="POST">
+                        {% for i in topQList %}
+                            <input type="checkbox" class="questionCheck" name="question" value="{{ i }}">
+                            <label for="question{{ i }}"><a href=canvas.com>{{ i }}</a></label><br>
+                        {% endfor %}
+                        <input type="button" onclick="", value="Next">
+                        <input type="submit">
+                    </form>
+                </section>
+
+            {% else %}
+                <section id="actionClick">
+                    {% if userId %}
+                        <h1 id="getRec">
+                            <a href="/recommendations">Your Recommendations Right Now!</a>
+                        </h1>
+                    {% else %}
+                        <h1 id="getRec">
+                            <a href="/login">Please Login First with StackExchange: SuperUser</a>
+                        </h1>
+                    {% endif %}
+                </section>
+            {% endif %}
+            <!-- 
+                Next Button
+                Submit Button 
+                CSS
+                    Change ForumRec Font
+                    Move Login to the Right
+                    Replace Login with Name
+            -->
+
+            <!-- <input type="submit" name="submit_button" value="Do Something">
+            <input type="submit" name="submit_button" value="Do Something Else"> -->
+
+            <!-- <input type="checkbox" id="question1" name="question1" value=1>
+                    <label for="question1"><a href=canvas.com></a>{{ 1 }}</label><br>
+                    <input type="checkbox" id="question2" name="question2" value=2>
+                    <label for="question2"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question3" name="question3" value=3>
+                    <label for="question3"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question4" name="question4" value=4>
+                    <label for="question4"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question5" name="question5" value=5>
+                    <label for="question5"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question6" name="question6" value=6>
+                    <label for="question6"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question7" name="question7" value=7>
+                    <label for="question7"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question8" name="question8" value=8>
+                    <label for="question8"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question9" name="question9" value=9>
+                    <label for="question9"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question10" name="question10" value=10>
+                    <label for="question10"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question11" name="question11" value=11>
+                    <label for="question11"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question12" name="question12" value=12>
+                    <label for="question12"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question13" name="question13" value=13>
+                    <label for="question13"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question14" name="question14" value=14>
+                    <label for="question14"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question15" name="question15" value=15>
+                    <label for="question15"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question16" name="question16" value=16>
+                    <label for="question16"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question17" name="question17" value=17>
+                    <label for="question17"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question18" name="question18" value=18>
+                    <label for="question18"><a href=canvas.com></a>Post question here</label><br>
+                    <input type="checkbox" id="question19" name="question19" value=19>
+                    <label for="question19"><a href=canvas.com></a>Post question here</label><br> -->
+        <script type="text/JavaScript" src="{{ url_for('static', filename='script.js')}}"></script>
+    </body>
 </html>
