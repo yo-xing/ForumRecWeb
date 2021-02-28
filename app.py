@@ -17,17 +17,24 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 AUTH_BASE_URL = "https://stackexchange.com/oauth"
 TOKEN_URL = "https://stackoverflow.com/oauth/access_token/json"
 CLIENT_ID = "19673"
-CLIENT_SECRET =  ""
-SECRET_KEY = ""
+CLIENT_SECRET =  "Ftm5ijUJpb7TUEb3jBNTyw(("
+SECRET_KEY = "nIFln5DrNi7grh*o22xAIw(("
 
 app = flask.Flask(__name__, template_folder='templates')
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    flask.render_template('main.html')
-    return """
-        <a href="/login">Login with StackExchange: SuperUser</a>
-    """
+    return flask.render_template('main.html')
+
+
+    # Click get recommendations
+    # Run API Script (Or Run on website start)
+    # Send API Data to Firebase
+    # Gather Data From Firebase to send to model
+    # Run Model with Data
+    # Send Updated Results to Firebase
+    # Return updated results to user
+
 
 @app.route('/login')
 def login():
@@ -50,8 +57,10 @@ def callback():
     me = SITE.fetch('me', access_token=token['access_token'])
 
     # Keep user_id, profile_image, display_name
+    vals = flask.json.jsonify(me['items'])
+    # userId = vals['user_id']
 
-    return flask.json.jsonify(me)
+    return flask.render_template('main.html', userId=me)
 
 @app.route('/', methods=['GET', 'POST'])
 def get_data():

@@ -2,18 +2,46 @@
 <html>
     <style>
     </style>
-
-
-
     <head>
         <title>ForumRec</title>
+        <h1 id="title">ForumRec</h1>
     </head>
-    <input type='submit' action="{{ url_for('get_data') }}" method="POST">
-        ForumRec Landing Page!
-    </input>
+    <div class="logged">
+        {% if userId %}
+            <p>{{ userId }}</p>
+        {% else %}
+            <a href="/login">Login with StackExchange: SuperUser</a>
+        {% endif %}
+    </div>
+
+    <div class="recommendations">
+        {% if userId %}
+            <!-- Tab links Needs JavaScript -->
+            <div class="tab">
+                <button class="tablinks" onclick="openCity(event, 'New')">New Questions</button>
+                <button class="tablinks" onclick="openCity(event, 'Previous')">Previous Question</button>
+            </div>
+
+            <!-- Tab content -->
+            <div id="New" class="tabcontent">
+                <h3>New Questions</h3>
+                <p>{{ recommends['New'] }}</p>
+            </div>
+        
+            <div id="Previous" class="tabcontent">
+                <h3>Previous Questions</h3>
+                <p>{{ recommends['Previous'] }}</p>
+                
+            </div>
+        {% elif uals %}
+            <h1 id="getRec">Get Your Recommendations Right Now!</h1>
+        {% else %}
+            <h1 id="getRec">Please Login First</h1>
+        {% endif %}
+    </div>
 
     <!-- <input type="submit" name="submit_button" value="Do Something">
     <input type="submit" name="submit_button" value="Do Something Else"> -->
 
-    <h1>DSC180B</h1>
+
 </html>
