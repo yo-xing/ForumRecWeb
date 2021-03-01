@@ -1,14 +1,13 @@
 <!doctype html>
 <html>
-    <style>
-    </style>
     <head>
         <title>ForumRec</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/static/main.css">
     </head>
     <body id="content">
         <header id="header-container">
-            <h1 id="projectTitle">ForumRec</h1>
+            <h1 id="project-title">ForumRec</h1>
             <div class="redirect-container">
                 <div id="logged">
                     {% if userId %}
@@ -16,17 +15,22 @@
                             <img src="{{ userItems['profile_image'] }}" alt="{{ userItems['display_name'] }}" id="profile"/>
                         </a>
                     {% else %}
-                        <a href="/login">Login</a>
+                        <a href="/login">
+                            <img src="{{ url_for('static', filename='images/login_logo.png')}}" alt="Login", id="profile">
+                        </a>
                     {% endif %}
                 </div>
                 <div id="website">
-                    <a href="jasrajjohl.github.io">Visit Main Website</a>
+                    <a href="jasrajjohl.github.io">Main Website</a>
                 </div>
             </div>
-
         </header>
+        <hr />
         <main id="middle">
-
+            {% if ans %}
+                <p>{{ ans }}</p>
+            {% endif %}
+            
             {% if userData %}
                 <section id="recommendations">
                         <!-- Tab links Needs JavaScript -->
@@ -39,7 +43,7 @@
                         <div id="New" class="tabcontent">
                             <h3>New Questions</h3>
                             {% for i in userQList['New'] %}
-                                <p class="questionRec">
+                                <p class="question-rec">
                                     <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
                                 </p>
                             {% endfor %}
@@ -49,7 +53,7 @@
                         <div id="Previous" class="tabcontent">
                             <h3>Previous Questions</h3>
                             {% for i in userQList['Previous'] %}
-                                <p class="questionRec">
+                                <p class="question-rec">
                                     <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
                                 </p>
                             {% endfor %}
@@ -63,36 +67,46 @@
                     <p>Choose at least 10 questions from the following pages to help us get an idea of your knowledge base</p>
                     <p>You must choose 10 questions to submit and you cannot go back on pages, so make sure to be sure of your answers before you hit next and get to the last page!</p>
                     <form action="{{ url_for('main') }}" method="POST">
-                        {% for i in topQList %}
-                            <input type="checkbox" class="questionCheck" name="question" value="{{ i }}">
-                            <label for="question{{ i }}"><a href=canvas.com>{{ i }}</a></label><br>
-                        {% endfor %}
-                        <input type="button" onclick="", value="Next">
-                        <input type="submit">
+                        <div id="scrollbox">
+                            {% for i in topQList %}
+                                <input type="checkbox" class="question-check" name="question" value="{{ i }}">
+                                <label for="question{{ i }}" class="question-rec"><a href=canvas.com>{{ i }}</a></label><br>
+                            {% endfor %}
+                        </div>
+                        <input type="submit" id="submit_button">
                     </form>
                 </section>
 
             {% else %}
-                <section id="actionClick">
+                <section id="action-click">
                     {% if userId %}
-                        <h1 id="getRec">
+                        <h1 id="get-rec">
                             <a href="/recommendations">Your Recommendations Right Now!</a>
                         </h1>
                     {% else %}
-                        <h1 id="getRec">
+                        <h1 id="get-rec">
                             <a href="/login">Please Login First with StackExchange: SuperUser</a>
                         </h1>
                     {% endif %}
                 </section>
             {% endif %}
+        </main>
+        <hr />
+        <footer>
+            <p>This is a ForumRec website</p>
+            <p>Yo Jeremi-jenko, Jasraj Johl, Jack Lin</p>
+        </footer>
             <!-- 
-                Next Button
-                Submit Button 
                 CSS
                     Change ForumRec Font
                     Move Login to the Right
                     Replace Login with Name
+                Flask Login
             -->
+
+
+            <!-- <iframe src="{{ url_for('frame') }}" width="100%" height="300"></iframe> -->
+            <!-- <input type="button" onclick="", value="Next"> -->
 
             <!-- <input type="submit" name="submit_button" value="Do Something">
             <input type="submit" name="submit_button" value="Do Something Else"> -->

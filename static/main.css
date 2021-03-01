@@ -1,0 +1,123 @@
+h1, h3  {
+    font-family: Georgia, Times, sans-serif;
+}
+
+* {
+    font-family: Georgia, Times, sans-serif;
+}
+
+head {
+    background-color: rgb(77, 77, 77);
+}
+
+body {
+    background-color: rgb(77, 77, 77);
+}
+
+#header-container {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;    
+}
+
+#project-title {
+    size: 22px;
+    font: 'Montserrat';
+}
+
+.redirect-container {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    margin: 6px;
+}
+
+#logged {
+    height: 40px;
+    width: 40px;
+}
+
+#profile {
+    outline-style: solid;
+    outline-color: black;
+    outline-width: 1px;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    background-color: white;
+    width: 80%;
+    height: 80%;
+}
+
+#website {
+    outline-style: solid;
+    outline-color: black;
+    outline-width: 1px;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    background-color: rgb(58, 151, 190);
+    height: 40px;
+    width: 90px;
+    border-radius:5px;
+ margin-right:10px;
+    padding:10px 10px 10px 10p;
+    font-size: small;
+    text-align: center;
+    overflow-x: auto; 
+}
+
+main {
+    padding: 10px
+}
+
+#recommendations {
+
+}
+
+.tab {
+
+}
+
+.tablinks {
+
+}
+
+.tabcontent {
+
+}
+
+.question-rec {
+
+}
+
+#cold-start {
+
+}
+
+#scrollbox {
+    height:30%;
+    width:80%;
+    padding: 4px;
+    border: 1px solid #ccc;
+    font:16px/26px Georgia, Garamond, Serif;
+    overflow:auto;
+}
+
+.question-check {
+
+}
+
+#submit_button {
+
+}
+
+#action-click {
+
+}
+
+#get-rec {
+
+}
+
+footer {
+    background-color: rgb(77, 77, 77);
+}
+
+
