@@ -69,8 +69,8 @@
                     <form action="{{ url_for('main') }}" method="POST">
                         <div id="scrollbox">
                             {% for i in topQList %}
-                                <input type="checkbox" class="question-check" name="question" value="{{ i }}">
-                                <label for="question{{ i }}" class="question-rec"><a href=canvas.com>{{ i }}</a></label><br>
+                                <input type="checkbox" class="question-check" name="question" value="{{ i[0] }}">
+                                <label for="question{{ i[0] }}" class="question-rec"><a href={{ i[2] }}>{{ i[1] }}</a></label><br>
                             {% endfor %}
                         </div>
                         <input type="submit" id="submit_button">
@@ -103,10 +103,6 @@
                     Replace Login with Name
                 Flask Login
             -->
-
-
-            <!-- <iframe src="{{ url_for('frame') }}" width="100%" height="300"></iframe> -->
-            <!-- <input type="button" onclick="", value="Next"> -->
 
             <!-- <input type="submit" name="submit_button" value="Do Something">
             <input type="submit" name="submit_button" value="Do Something Else"> -->

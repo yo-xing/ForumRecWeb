@@ -1,7 +1,9 @@
 import flask
 from authlib.integrations import requests_client
 import requests
+import psycopg2
 import pickle
+import pandas as pd
 import sys
 import os
 
@@ -9,6 +11,14 @@ from stackapi import StackAPI
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
+# Set up connection to RDS db
+connection = psycopg2.connect(
+    host = 'forumrec-db.clb5kddz8xbd.us-west-1.rds.amazonaws.com',
+    port = 5432,
+    user = 'ForumRecAdmin',
+    password = 'ForumRecTest',
+    database = 'postgres')
+cursor = connection.cursor()
 
 # Use pickle to load in model
 # with open(f'model/first_model.pkl', 'rb') as f:
@@ -19,6 +29,8 @@ TOKEN_URL = "https://stackoverflow.com/oauth/access_token/json"
 CLIENT_ID = "19673"
 CLIENT_SECRET =  "Ftm5ijUJpb7TUEb3jBNTyw(("
 SECRET_KEY = "nIFln5DrNi7grh*o22xAIw(("
+SPLIT_DATE = 1514764800
+# FILTER = '!.FjwPGLxmyYTgEFmTS8QjLMHj6rLP '
 USER_VALS = None
 
 app = flask.Flask(__name__, template_folder='templates')
@@ -33,14 +45,18 @@ def main():
         userId = USER_VALS['user_id']
         return flask.render_template('main.html', userId=userId, userItems=USER_VALS, ans=answers)
 
-
-    # Click get recommendations
     # Run API Script (Or Run on website start)
     # Send API Data to Firebase
     # Gather Data From Firebase to send to model
     # Run Model with Data
     # Send Updated Results to Firebase
     # Return updated results to user
+
+    # top_questions_list = ['Yes', 'Sir', 'We', 'Are', 'Doing', 'It']
+    # user_questions_data = {'New': [1298302, 1629649], 'Previous':[1629646]}
+    # all_questions_data = {1298302: ['How to access my Raspberry Pi remotely?', 'https://superuser.com/questions/1298302'], 
+    #         1629649: ['Recovering a deleted text message on Android', 'https://superuser.com/questions/1629649'],
+    #         1629646: ['What is the regex to find and move', 'https://superuser.com/questions/1629646']}
 
 
 @app.route('/login')
@@ -68,20 +84,70 @@ def callback():
     USER_VALS = me['items'][0]
     userId = USER_VALS['user_id']
 
+    # Get users with cold start
+    query_users_cold = """
+    SELECT *
+    FROM USERS
+    """
+    
+    cold_users = pd.read_sql(query_users_cold, con=connection)
+
+    # Set of cold_users
+    if userId in set(cold_users.user_id):
+        pass
+    
+    else:
+        answered_questions = SITE.fetch('me/answers', access_token=token['access_token'], fromdate=SPLIT_DATE)
+
+        try:
+            len_questions = len(answered_questions['items']['answers'])
+        except:
+            len_questions = 0
+
+        if len_questions < 25:
+            insert_cold = """
+            INSERT INTO USERS (user_id, name, profile_img_url, cold)
+            VALUES ({0}, '{1}', '{2}', TRUE)
+            """.format(userId, USER_VALS['display_name'], USER_VALS['profile_image'])
+            
+        else:
+            insert_cold = """
+            INSERT INTO USERS (user_id, name, profile_img_url, cold)
+            VALUES ({0}, '{1}', '{2}', FALSE)
+            """.format(userId, USER_VALS['display_name'], USER_VALS['profile_image'])
+        
+        cursor.execute(insert_cold)
+        connection.commit()
+
     return flask.render_template('main.html', userId=userId, userItems=USER_VALS)
 
 @app.route('/recommendations')
 def recommendations():
     userId = USER_VALS['user_id']
-    top_questions_list = ['Yes', 'Sir', 'We', 'Are', 'Doing', 'It']
-    user_questions_data = {'New': [1298302, 1629649], 'Previous':[1629646]}
-    all_questions_data = {1298302: ['How to access my Raspberry Pi remotely?', 'https://superuser.com/questions/1298302'], 
-            1629649: ['Recovering a deleted text message on Android', 'https://superuser.com/questions/1629649'],
-            1629646: ['What is the regex to find and move', 'https://superuser.com/questions/1629646']}
-    data_avail = True
+    
+    query_cold_start = """
+    SELECT COLD
+    FROM USERS
+    WHERE USER_ID = {0}
+    """.format(userId)
 
-    return flask.render_template('main.html', userId=userId, userItems=USER_VALS, coldStart=True, userData=data_avail,
-                                    topQList=top_questions_list, userQList=user_questions_data, qList=all_questions_data)
+    is_cold = pd.read_sql(query_cold_start, con=connection).cold[0] 
+
+    # if cold_users.cold: 
+    #     pass
+    #grab user from database 
+    query_top_pop = """
+    SELECT *
+    FROM COLDQUESTIONS
+    """
+
+    top_questions_list = pd.read_sql(query_top_pop, con=connection).sample(100).values.tolist()
+    
+    data_avail = False
+
+    return flask.render_template('main.html', userId=userId, userItems=USER_VALS, coldStart=is_cold, userData=data_avail,
+                                    topQList=top_questions_list)
+                                    # , userQList=user_questions_data, qList=all_questions_data
 
 @app.route('/', methods=['GET', 'POST'])
 def get_data():
