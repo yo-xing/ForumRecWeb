@@ -22,4 +22,18 @@ function openTab(evt, tabName) {
 // Opens Tab on defualt
 document.getElementById('defaultTab').click();
 
+function letSubmit() {
+    // Get checkboxes list and submit button
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    let submitter = document.getElementById('submit_button');
+
+    if (Array.prototype.slice.call(checkboxes).filter(x => x.checked == true).length >= 10) {
+      submitter.disabled = false;
+    }
+    else {
+      submitter.disabled = true;
+    }
+
+}
+
 // https://www.w3schools.com/howto/howto_js_tabs.asp

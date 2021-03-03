@@ -69,11 +69,11 @@
                     <form action="{{ url_for('main') }}" method="POST">
                         <div id="scrollbox">
                             {% for i in topQList %}
-                                <input type="checkbox" class="question-check" name="question" value="{{ i[0] }}">
+                                <input type="checkbox" class="question-check" name="question" value="{{ i[0] }}" onclick="letSubmit()">
                                 <label for="question{{ i[0] }}" class="question-rec"><a href={{ i[2] }}>{{ i[1] }}</a></label><br>
                             {% endfor %}
                         </div>
-                        <input type="submit" id="submit_button">
+                        <input type="submit" id="submit_button" disabled>
                     </form>
                 </section>
 
