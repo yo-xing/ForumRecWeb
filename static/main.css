@@ -1,4 +1,4 @@
-h1, h3  {
+/* h1, h3  {
     font-family: Georgia, Times, sans-serif;
 }
 
@@ -9,10 +9,21 @@ h1, h3  {
 head {
     background-color: rgb(77, 77, 77);
 }
+*/
 
 body {
-    background-color: rgb(77, 77, 77);
+    padding-top: 7%;
+    padding-bottom: 7%;
 }
+
+.nav-tabs .nav-link.active {
+    background-color:black;
+    border-bottom:black;
+    font-weight: bold;
+    color: white;
+  }
+
+/*
 
 #header-container {
     display: flex;
@@ -31,22 +42,21 @@ body {
     align-content: center;
     margin: 6px;
 }
+*/
 
-#logged {
-    height: 40px;
-    width: 40px;
+.img-fluid {
+    max-width: 20%;
+    height: auto; 
 }
 
 #profile {
     outline-style: solid;
     outline-color: black;
     outline-width: 1px;
-    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
     background-color: white;
-    width: 80%;
-    height: 80%;
 }
 
+/*
 #website {
     outline-style: solid;
     outline-color: black;
@@ -90,15 +100,16 @@ main {
 #cold-start {
 
 }
+*/
 
-#scrollbox {
-    height:30%;
-    width:80%;
-    padding: 4px;
-    border: 1px solid #ccc;
-    font:16px/26px Georgia, Garamond, Serif;
-    overflow:auto;
+.scrollbox {
+    height: 400px;
+    padding: 10px;
+    border: 2px solid black;
+    overflow-y: scroll;
 }
+
+/*
 
 .question-check {
 
@@ -116,8 +127,10 @@ main {
 
 }
 
+*/
+
 footer {
-    background-color: rgb(77, 77, 77);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
-
-

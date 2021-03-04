@@ -2,13 +2,159 @@
 <html>
     <head>
         <title>ForumRec</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css" integrity="sha384-9+PGKSqjRdkeAU7Eu4nkJU8RFaH8ace8HGXnkiKMP9I9Te0GJ4/km3L1Z8tXigpG" crossorigin="anonymous">
         <link rel="stylesheet" href="/static/main.css">
     </head>
     <body id="content">
         <header id="header-container">
-            <h1 id="project-title">ForumRec</h1>
-            <div class="redirect-container">
+            <nav class="px-5 navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+                <h1 id="project-title">
+                    <a class="navbar-brand text-info" href="/">ForumRec</a>
+                </h1>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>              
+
+                <div class="collapse navbar-collapse justify-content-end" id="navbarColor01">
+                    <ul class="navbar-nav text-right">
+                        <li class="nav-item">
+                            {% if userId %}
+                                <a class="nav-link" href="https://superuser.com/users/{{userId}}">{{ userItems['display_name'] }}</a>
+                            {% else %}
+                                <a class="nav-link" href="/login">Login</a>
+                            {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://jasrajjohl.github.io">Main Website</a>
+                        </li>
+                        <!-- Github Link to Navbar as button? -->
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <br>
+        <main class="px-5" id="middle">
+            <div class="jumbotron vertical-center">
+
+                {% if userData %}
+                    <section id="recommendations">
+                        <!-- Tab links Needs JavaScript -->
+                        <h2 class="text-center pb-4">Here are your recommendations!</h2>
+                        <p>You can see both new and previous recommendations below</p>
+                        <p class="text-info">You can go directly to SuperUser by clicking on the question and submit your answer right now!</p>
+                        <br>
+                        
+                        <div class="tab">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#New">New Questions</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#Previous">Previous Questions</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <br class="pt-1">
+
+                        <!-- Tab content -->
+                        <div id="myTabContent" class="tab-content">
+                            <div class="tab-pane fade active show" id="New">
+                                <ul class="nav nav-pills flex-column">
+                                    {% for i in userQList['New'] %}
+                                        <li class="nav-item pt-3">
+                                            <p class="question-rec">
+                                                <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
+                                            </p>
+                                        </li>
+                                        <span class="border border-primary"></span> 
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <br class="pt-1">
+
+                            <div class="tab-pane fade" id="Previous">
+                                <ul class="nav nav-pills flex-column">
+                                    {% for i in userQList['Previous'] %}
+                                        <li class="nav-item">
+                                            <p class="question-rec">
+                                                <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
+                                            </p>
+                                        </li>
+                                        <span class="border border-primary"></span> 
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                {% elif coldStart %}
+                    <section id="cold-start">
+                        <h2 class="text-center pb-4">Looks like you are new to SuperUser!</h2>
+                        <p>Choose at least 10 questions from the following pages to help us get an idea of which questions you are best able to answer!</p>
+                        <p class="text-warning">You must choose at least 10 questions to submit, but the more questions you check the more you help us generate the right questions for you!</p>
+                        <p class="text-info">Heads up! You can click on any question to see the full details of the question</p>
+                        <!-- Put each question in a pill and allow it to be clickable -->
+                        <form action="{{ url_for('main') }}" method="POST">
+                            <div class="scrollbox">
+                                <ul class="nav nav-pills flex-column">
+                                    {% for i in topQList %}
+                                        <li class="nav-item">
+                                            <input type="checkbox" class="question-check" name="question" value="{{ i[0] }}" onclick="letSubmit()">
+                                            <label for="question{{ i[0] }}" class="question-rec"><a class="nav-link" href="{{ i[2] }}">{{ i[1] }}</a></label>
+                                        </li>
+                                        <span class="border border-primary"></span> 
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <br>
+                            <input type="submit" class="btn btn-info" id="submit_button" disabled>
+                        </form>
+                    </section>
+
+                {% else %}
+                    <section class="vertical-center" id="action-click">
+                        <!-- Make buttons for these, and center text and put button spaciously below -->
+                        {% if userId %}
+                            <h1 class="text-center" id="get-rec">Your Recommendations Right Now!</h1>
+                            <br class="py-5">
+                            <br class="py-5">
+                            <p class="lead text-center pt-4">
+                                <a class="btn btn-primary btn-lg" href="/recommendations" role="button">Get Recommendations!</a>
+                            </p>
+                        {% else %}
+                            <h1 class="text-center" id="get-rec">Please Login First with StackExchange: SuperUser</h1>
+                            <br class="py-5">
+                            <br class="py-5">
+                            <p class="lead text-center pt-4">
+                                <a class="btn btn-primary btn-lg" href="/login" role="button">Login Now!</a>
+                            </p>
+                        {% endif %}
+                    </section>
+                {% endif %}
+            </div>
+        </main>
+        <br>
+        <footer class="px-5 text-white bg-primary fixed-bottom" id="footer">
+            <div class="pt-4 pb-3 row">
+                <div class="col-lg-12">
+                    <p>This is a ForumRec website.</p>
+                    <p>Made by Yo Jeremijenko-Conley, Jasraj Johl, Jack Lin</p>
+                    <p>Based on <a class="text-muted" href="https://getbootstrap.com/">Bootstrap</a>. The Lux theme was designed by <a class="text-muted" href="https://thomaspark.co/">Thomas Park</a> and released by <a class="text-muted" href="https://bootswatch.com/">Bootswatch</a>.
+                </div>
+            </div>
+        </footer>
+            <!-- 
+                CSS
+                    Change ForumRec Font
+                    Move Login to the Right
+                    Replace Login with Name
+                Flask Login
+            -->
+
+            <!-- <h1 id="project-title">ForumRec</h1>
+                <div class="redirect-container">
                 <div id="logged">
                     {% if userId %}
                         <a href="https://superuser.com/users/{{userId}}">
@@ -23,86 +169,45 @@
                 <div id="website">
                     <a href="jasrajjohl.github.io">Main Website</a>
                 </div>
+            </div> -->
+ 
+            <!-- Tab links Needs JavaScript 
+            <div class="tab">
+                <button class="tablinks" id="defaultTab" onclick="openTab(event, 'New')">New Questions</button>
+                <button class="tablinks" onclick="openTab(event, 'Previous')">Previous Question</button>
             </div>
-        </header>
-        <hr />
-        <main id="middle">
-            {% if ans %}
-                <p>{{ ans }}</p>
-            {% endif %}
-            
+
+            Tab content
+            Create Tabs put the questions into pills
+
             {% if userData %}
-                <section id="recommendations">
-                        <!-- Tab links Needs JavaScript -->
-                        <div class="tab">
-                            <button class="tablinks" id="defaultTab" onclick="openTab(event, 'New')">New Questions</button>
-                            <button class="tablinks" onclick="openTab(event, 'Previous')">Previous Question</button>
-                        </div>
+            
+                <div id="New" class="tabcontent">
+                    <h3>New Questions</h3>
+                    {% for i in userQList['New'] %}
+                        <p class="question-rec">
+                            <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
+                        </p>
+                    {% endfor %}
 
-                        <!-- Tab content -->
-                        <div id="New" class="tabcontent">
-                            <h3>New Questions</h3>
-                            {% for i in userQList['New'] %}
-                                <p class="question-rec">
-                                    <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
-                                </p>
-                            {% endfor %}
+                </div>
+            
+                <div id="Previous" class="tabcontent">
+                    <h3>Previous Questions</h3>
+                    {% for i in userQList['Previous'] %}
+                        <p class="question-rec">
+                            <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
+                        </p>
+                    {% endfor %}
 
-                        </div>
-                    
-                        <div id="Previous" class="tabcontent">
-                            <h3>Previous Questions</h3>
-                            {% for i in userQList['Previous'] %}
-                                <p class="question-rec">
-                                    <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
-                                </p>
-                            {% endfor %}
-                            
-                        </div>
-                </section>
-
-            {% elif coldStart %}
-                <section id="cold-start">
-                    <h3>Looks like you are new to SuperUser!</h3>
-                    <p>Choose at least 10 questions from the following pages to help us get an idea of your knowledge base</p>
-                    <p>You must choose 10 questions to submit and you cannot go back on pages, so make sure to be sure of your answers before you hit next and get to the last page!</p>
-                    <form action="{{ url_for('main') }}" method="POST">
-                        <div id="scrollbox">
-                            {% for i in topQList %}
-                                <input type="checkbox" class="question-check" name="question" value="{{ i[0] }}" onclick="letSubmit()">
-                                <label for="question{{ i[0] }}" class="question-rec"><a href={{ i[2] }}>{{ i[1] }}</a></label><br>
-                            {% endfor %}
-                        </div>
-                        <input type="submit" id="submit_button" disabled>
-                    </form>
-                </section>
-
-            {% else %}
-                <section id="action-click">
-                    {% if userId %}
-                        <h1 id="get-rec">
-                            <a href="/recommendations">Your Recommendations Right Now!</a>
-                        </h1>
-                    {% else %}
-                        <h1 id="get-rec">
-                            <a href="/login">Please Login First with StackExchange: SuperUser</a>
-                        </h1>
-                    {% endif %}
-                </section>
             {% endif %}
-        </main>
-        <hr />
-        <footer>
-            <p>This is a ForumRec website</p>
-            <p>Yo Jeremi-jenko, Jasraj Johl, Jack Lin</p>
-        </footer>
-            <!-- 
-                CSS
-                    Change ForumRec Font
-                    Move Login to the Right
-                    Replace Login with Name
-                Flask Login
+
             -->
+
+            <!-- {% for i in topQList %}
+            <input type="checkbox" class="question-check" name="question" value="{{ i[0] }}" onclick="letSubmit()">
+            <label for="question{{ i[0] }}" class="question-rec"><a href={{ i[2] }}>{{ i[1] }}</a></label><br>
+            {% endfor %} -->
 
             <!-- <input type="submit" name="submit_button" value="Do Something">
             <input type="submit" name="submit_button" value="Do Something Else"> -->
@@ -145,6 +250,9 @@
                     <label for="question18"><a href=canvas.com></a>Post question here</label><br>
                     <input type="checkbox" id="question19" name="question19" value=19>
                     <label for="question19"><a href=canvas.com></a>Post question here</label><br> -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script type="text/JavaScript" src="{{ url_for('static', filename='script.js')}}"></script>
     </body>
 </html>

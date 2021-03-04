@@ -43,6 +43,9 @@ def main():
     if flask.request.method == 'POST':
         answers = flask.request.form.getlist("question")
         userId = USER_VALS['user_id']
+        # Write these answers data into the database as the cold-start questions to answer
+        # Create model as well
+        # Potentially add progress bar
         return flask.render_template('main.html', userId=userId, userItems=USER_VALS, ans=answers)
 
     # Run API Script (Or Run on website start)
@@ -61,8 +64,8 @@ def main():
 
 @app.route('/login')
 def login():
-    superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="http://jackzlin.com/callback")
-    #superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="http://localhost:5000/callback")
+    # superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="http://jackzlin.com/callback")
+    superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="http://localhost:5000/callback")
     auth_url, _ = superuser.create_authorization_url(AUTH_BASE_URL)
 
     return flask.redirect(auth_url)
@@ -74,8 +77,8 @@ def callback():
     token = superuser.fetch_token(
     	url=TOKEN_URL, client_secret=CLIENT_SECRET, \
         authorization_response=flask.request.url, \
-        redirect_uri="http://jackzlin.com/callback" )
-        #redirect_uri="http://localhost:5000/callback" )
+        # redirect_uri="http://jackzlin.com/callback" )
+        redirect_uri="http://localhost:5000/callback" )
 
     SITE = StackAPI('superuser', key=SECRET_KEY)
     me = SITE.fetch('me', access_token=token['access_token'])
@@ -142,20 +145,25 @@ def recommendations():
     FROM COLDQUESTIONS
     """
 
+    # If not cold user, get their data and write it into the manner commented out below
+
     top_questions_list = pd.read_sql(query_top_pop, con=connection).sample(100).values.tolist()
+    # user_questions_data = {'New': [1298302, 1629649], 'Previous':[1629646]}
+    # all_questions_data = {1298302: ['How to access my Raspberry Pi remotely?', 'https://superuser.com/questions/1298302'], 
+    #         1629649: ['Recovering a deleted text message on Android', 'https://superuser.com/questions/1629649'],
+    #         1629646: ['What is the regex to find and move', 'https://superuser.com/questions/1629646']}
     
     data_avail = False
 
     return flask.render_template('main.html', userId=userId, userItems=USER_VALS, coldStart=is_cold, userData=data_avail,
                                     topQList=top_questions_list)
-                                    # , userQList=user_questions_data, qList=all_questions_data
+                                    #, userQList=user_questions_data, qList=all_questions_data)
 
-@app.route('/', methods=['GET', 'POST'])
-def get_data():
-    returnVal = requests.get('https://stackexchange.com/oauth/dialog?client_id=19673&scope=&redirect_uri=http://jackzlin.com/').content
-    #returnVal = requests.get('https://stackexchange.com/oauth/dialog?client_id=19673&scope=&redirect_uri=http://localhost:5000/').content
-    print(returnVal)
-    return returnVal
+# @app.route('/', methods=['GET', 'POST'])
+# def get_data():
+#     returnVal = requests.get('https://stackexchange.com/oauth/dialog?client_id=19673&scope=&redirect_uri=http://jackzlin.com/callback').content
+#     print(returnVal)
+#     return returnVal
 
 if __name__ == '__main__':
     app.run(debug=True)
