@@ -64,7 +64,7 @@ def main():
 
 @app.route('/login')
 def login():
-    superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="http://jackzlin.com/callback")
+    superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="https://jackzlin.com/callback")
     # superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="http://localhost:5000/callback")
     auth_url, _ = superuser.create_authorization_url(AUTH_BASE_URL)
 
@@ -77,7 +77,7 @@ def callback():
     token = superuser.fetch_token(
     	url=TOKEN_URL, client_secret=CLIENT_SECRET, \
         authorization_response=flask.request.url, \
-        redirect_uri="http://jackzlin.com/callback" )
+        redirect_uri="https://jackzlin.com/callback" )
         # redirect_uri="http://localhost:5000/callback" )
 
     SITE = StackAPI('superuser', key=SECRET_KEY)

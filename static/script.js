@@ -20,7 +20,7 @@
 //   }
 
 // Opens Tab on defualt
-document.getElementById('defaultTab').click();
+// document.getElementById('defaultTab').click();
 
 function letSubmit() {
     // Get checkboxes list and submit button
