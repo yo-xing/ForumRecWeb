@@ -6,6 +6,11 @@ import pickle
 import pandas as pd
 import sys
 import os
+from io import StringIO
+import boto3
+
+import new_user
+
 
 from stackapi import StackAPI
 
@@ -46,6 +51,36 @@ def main():
         # Write these answers data into the database as the cold-start questions to answer
         # Create model as well
         # Potentially add progress bar
+
+        query_top_pop = """
+        SELECT *
+        FROM COLDQUESTIONS
+        """
+
+        # If not cold user, get their data and write it into the manner commented out below
+
+        cold_df = pd.read_sql(query_top_pop, con=connection)[['id']]
+        cold_df['OwnerUserId'] = pd.Series([userId for _ in range(cold_df.shape[0])])
+        cold_df['Score'] = cold_df.id.apply(lambda x: 1 if x in answers else 0)
+
+        # Reorder and rename columns
+        cold_df.columns = ['ParentId', 'OwnerUserId', 'Score']
+        cold_df = cold_df[['OwnerUserId', 'ParentId', 'Score']]
+
+        # Write to s3
+        bucket = "forumrecbucket"
+        csv_buffer = StringIO()
+        cold_df.to_csv(csv_buffer, index=False)
+            
+        s3_resource = boto3.resource('s3')
+        s3_resource.Object(bucket, 'new_sample.csv').put(Body=csv_buffer.getvalue())
+
+        # get csv from s3
+        # csv_obj = client.get_object(Bucket=bucket_name, Key=object_key)['Body'].read().decode('utf-8')
+        # df = pd.read_csv(StringIO(csv_obj))
+        
+        new_user.main()
+        
         return flask.render_template('main.html', userId=userId, userItems=USER_VALS, ans=answers)
 
     # Run API Script (Or Run on website start)
@@ -64,8 +99,8 @@ def main():
 
 @app.route('/login')
 def login():
-    superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="https://jackzlin.com/callback")
-    # superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="http://localhost:5000/callback")
+    # superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="https://jackzlin.com/callback")
+    superuser = requests_client.OAuth2Session(CLIENT_ID, redirect_uri="http://localhost:5000/callback")
     auth_url, _ = superuser.create_authorization_url(AUTH_BASE_URL)
 
     return flask.redirect(auth_url)
@@ -77,8 +112,8 @@ def callback():
     token = superuser.fetch_token(
     	url=TOKEN_URL, client_secret=CLIENT_SECRET, \
         authorization_response=flask.request.url, \
-        redirect_uri="https://jackzlin.com/callback" )
-        # redirect_uri="http://localhost:5000/callback" )
+        # redirect_uri="https://jackzlin.com/callback" )
+        redirect_uri="http://localhost:5000/callback" )
 
     SITE = StackAPI('superuser', key=SECRET_KEY)
     me = SITE.fetch('me', access_token=token['access_token'])
