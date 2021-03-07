@@ -6,3 +6,5 @@ lightfm
 authlib
 stackapi
 psycopg2
+boto3
+s3fs
