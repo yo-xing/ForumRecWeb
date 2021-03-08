@@ -8,6 +8,8 @@
     </head>
     <body id="content">
         <header id="header-container">
+
+            <!-- Navigation Bar locked in at the Top -->
             <nav class="px-5 navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
                 <h1 id="project-title">
                     <a class="navbar-brand text-info" href="/">ForumRec</a>
@@ -26,9 +28,15 @@
                             {% endif %}
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://jasrajjohl.github.io">Main Website</a>
+                            <a class="nav-link" href="/about">About</a>
                         </li>
-                        <!-- Github Link to Navbar as button? -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Github</a>
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="https://github.com/okminz/ForumRec">Project Code</a>
+                              <a class="dropdown-item" href="https://github.com/okminz/ForumRecWeb">Website Code</a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -37,14 +45,17 @@
         <main class="px-5" id="middle">
             <div class="jumbotron vertical-center">
 
+                <!-- Center of the page where content is -->
                 {% if userData %}
+
+                    <!-- Gives recommendations to users, including history of recommendations -->
                     <section id="recommendations">
-                        <!-- Tab links Needs JavaScript -->
                         <h2 class="text-center pb-4">Here are your recommendations!</h2>
                         <p>You can see both new and previous recommendations below</p>
                         <p class="text-info">You can go directly to SuperUser by clicking on the question and submit your answer right now!</p>
                         <br>
                         
+                        <!-- Tabs on top -->
                         <div class="tab">
                             <ul class="nav nav-tabs">
                                 <li class="nav-item">
@@ -59,6 +70,8 @@
 
                         <!-- Tab content -->
                         <div id="myTabContent" class="tab-content">
+
+                            <!-- New recommendations -->
                             <div class="tab-pane fade active show" id="New">
                                 <ul class="nav nav-pills flex-column">
                                     {% for i in userQList['New'] %}
@@ -74,6 +87,7 @@
 
                             <br class="pt-1">
 
+                            <!-- Previous Recommendations -->
                             <div class="tab-pane fade" id="Previous">
                                 <ul class="nav nav-pills flex-column">
                                     {% for i in userQList['Previous'] %}
@@ -90,12 +104,15 @@
                     </section>
 
                 {% elif coldStart %}
+
+                    <!-- Provides cold start questions for users to choose -->
                     <section id="cold-start">
                         <h2 class="text-center pb-4">Looks like you are new to SuperUser!</h2>
                         <p>Choose at least 10 questions from the following pages to help us get an idea of which questions you are best able to answer!</p>
                         <p class="text-warning">You must choose at least 10 questions to submit, but the more questions you check the more you help us generate the right questions for you!</p>
                         <p class="text-info">Heads up! You can click on any question to see the full details of the question</p>
-                        <!-- Put each question in a pill and allow it to be clickable -->
+                        
+                        <!-- Displays all cold start questions in a checklist form inside a scrollable box with clickable links -->
                         <form action="{{ url_for('main') }}" method="POST">
                             <div class="scrollbox">
                                 <ul class="nav nav-pills flex-column">
@@ -114,9 +131,12 @@
                     </section>
 
                 {% else %}
+
+                    <!-- Front page to start login or recommendations process -->
                     <section class="vertical-center" id="action-click">
-                        <!-- Make buttons for these, and center text and put button spaciously below -->
                         {% if userId %}
+
+                            <!-- Get Recommendations -->
                             <h1 class="text-center" id="get-rec">Your Recommendations Right Now!</h1>
                             <br class="py-5">
                             <br class="py-5">
@@ -124,7 +144,9 @@
                                 <a class="btn btn-primary btn-lg" href="/recommendations" role="button">Get Recommendations!</a>
                             </p>
                         {% else %}
-                            <h1 class="text-center" id="get-rec">Please Login First with StackExchange: SuperUser</h1>
+
+                            <!-- Login -->
+                            <h1 class="text-center px-5" id="get-rec">Please Login First with StackExchange: SuperUser</h1>
                             <br class="py-5">
                             <br class="py-5">
                             <p class="lead text-center pt-4">
@@ -136,120 +158,17 @@
             </div>
         </main>
         <br>
+
+        <!-- Footer with website information -->
         <footer class="px-5 text-white bg-primary fixed-bottom" id="footer">
             <div class="pt-4 pb-3 row">
                 <div class="col-lg-12">
                     <p>This is a ForumRec website.</p>
-                    <p>Made by Yo Jeremijenko-Conley, Jasraj Johl, Jack Lin</p>
+                    <p>Made by Yo Jeremijenko-Conley, Jasraj Johl, Jack Lin. Contact us at <a class="text-muted" href="mailto:jsjohl@ucsd.edu">jsjohl@ucsd.edu</a></p>
                     <p>Based on <a class="text-muted" href="https://getbootstrap.com/">Bootstrap</a>. The Lux theme was designed by <a class="text-muted" href="https://thomaspark.co/">Thomas Park</a> and released by <a class="text-muted" href="https://bootswatch.com/">Bootswatch</a>.
                 </div>
             </div>
         </footer>
-            <!-- 
-                CSS
-                    Change ForumRec Font
-                    Move Login to the Right
-                    Replace Login with Name
-                Flask Login
-            -->
-
-            <!-- <h1 id="project-title">ForumRec</h1>
-                <div class="redirect-container">
-                <div id="logged">
-                    {% if userId %}
-                        <a href="https://superuser.com/users/{{userId}}">
-                            <img src="{{ userItems['profile_image'] }}" alt="{{ userItems['display_name'] }}" id="profile"/>
-                        </a>
-                    {% else %}
-                        <a href="/login">
-                            <img src="{{ url_for('static', filename='images/login_logo.png')}}" alt="Login", id="profile">
-                        </a>
-                    {% endif %}
-                </div>
-                <div id="website">
-                    <a href="jasrajjohl.github.io">Main Website</a>
-                </div>
-            </div> -->
- 
-            <!-- Tab links Needs JavaScript 
-            <div class="tab">
-                <button class="tablinks" id="defaultTab" onclick="openTab(event, 'New')">New Questions</button>
-                <button class="tablinks" onclick="openTab(event, 'Previous')">Previous Question</button>
-            </div>
-
-            Tab content
-            Create Tabs put the questions into pills
-
-            {% if userData %}
-            
-                <div id="New" class="tabcontent">
-                    <h3>New Questions</h3>
-                    {% for i in userQList['New'] %}
-                        <p class="question-rec">
-                            <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
-                        </p>
-                    {% endfor %}
-
-                </div>
-            
-                <div id="Previous" class="tabcontent">
-                    <h3>Previous Questions</h3>
-                    {% for i in userQList['Previous'] %}
-                        <p class="question-rec">
-                            <a href="{{ qList[i][1] }}">{{qList[i][0]}}</a>
-                        </p>
-                    {% endfor %}
-
-            {% endif %}
-
-            -->
-
-            <!-- {% for i in topQList %}
-            <input type="checkbox" class="question-check" name="question" value="{{ i[0] }}" onclick="letSubmit()">
-            <label for="question{{ i[0] }}" class="question-rec"><a href={{ i[2] }}>{{ i[1] }}</a></label><br>
-            {% endfor %} -->
-
-            <!-- <input type="submit" name="submit_button" value="Do Something">
-            <input type="submit" name="submit_button" value="Do Something Else"> -->
-
-            <!-- <input type="checkbox" id="question1" name="question1" value=1>
-                    <label for="question1"><a href=canvas.com></a>{{ 1 }}</label><br>
-                    <input type="checkbox" id="question2" name="question2" value=2>
-                    <label for="question2"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question3" name="question3" value=3>
-                    <label for="question3"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question4" name="question4" value=4>
-                    <label for="question4"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question5" name="question5" value=5>
-                    <label for="question5"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question6" name="question6" value=6>
-                    <label for="question6"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question7" name="question7" value=7>
-                    <label for="question7"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question8" name="question8" value=8>
-                    <label for="question8"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question9" name="question9" value=9>
-                    <label for="question9"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question10" name="question10" value=10>
-                    <label for="question10"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question11" name="question11" value=11>
-                    <label for="question11"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question12" name="question12" value=12>
-                    <label for="question12"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question13" name="question13" value=13>
-                    <label for="question13"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question14" name="question14" value=14>
-                    <label for="question14"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question15" name="question15" value=15>
-                    <label for="question15"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question16" name="question16" value=16>
-                    <label for="question16"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question17" name="question17" value=17>
-                    <label for="question17"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question18" name="question18" value=18>
-                    <label for="question18"><a href=canvas.com></a>Post question here</label><br>
-                    <input type="checkbox" id="question19" name="question19" value=19>
-                    <label for="question19"><a href=canvas.com></a>Post question here</label><br> -->
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

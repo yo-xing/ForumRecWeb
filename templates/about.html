@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+    <head>
+        <title>ForumRec</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css" integrity="sha384-9+PGKSqjRdkeAU7Eu4nkJU8RFaH8ace8HGXnkiKMP9I9Te0GJ4/km3L1Z8tXigpG" crossorigin="anonymous">
+        <link rel="stylesheet" href="/static/main.css">
+    </head>
+    <body id="content">
+        <header id="header-container">
+
+            <!-- Navigation Bar locked in at the Top -->
+            <nav class="px-5 navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+                <h1 id="project-title">
+                    <a class="navbar-brand text-info" href="/">ForumRec</a>
+                </h1>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>              
+
+                <div class="collapse navbar-collapse justify-content-end" id="navbarColor01">
+                    <ul class="navbar-nav text-right">
+                        <li class="nav-item">
+                            {% if userId %}
+                                <a class="nav-link" href="https://superuser.com/users/{{userId}}">{{ userItems['display_name'] }}</a>
+                            {% else %}
+                                <a class="nav-link" href="/login">Login</a>
+                            {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/about">About</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Github</a>
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="https://github.com/okminz/ForumRec">Project Code</a>
+                              <a class="dropdown-item" href="https://github.com/okminz/ForumRecWeb">Website Code</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <br>
+        <main class="px-5" id="middle">
+            <div class="jumbotron vertical-center">
+
+                <!-- Center of the page where content is -->
+                
+                <section class="vertical-center" id="action-click">
+
+                    <!-- About -->
+                    <h1 class="text-center px-5" id="about-page">About ForumRec</h1>
+                    <br class="py-5">
+                    <p class="lead px-5">ForumRec is a recommendation system that works with the <a href="superuser.com">Super User</a> forum of the stack exchange forum website. Through the <a href="https://api.stackexchange.com/">Stack Apps API</a> we are able to gather the recent questions that come from the Super User forum website and determine through our data model, which users of ours are best equipped to answer those questions. We hope to make our users time on Super User more efficient and easier as we give them the questions they have the knowledge to answer. Go to the home page to get started with ForumRec right now!</p>
+                    <br class="py-5">
+                    <br class="py-5">
+                    <p class="lead text-center pt-4">
+                        <a class="btn btn-primary btn-lg" href="/" role="button">Go to the Home Page</a>
+                    </p>
+                </section>
+            </div>
+        </main>
+        <br>
+
+        <!-- Footer with website information -->
+        <footer class="px-5 text-white bg-primary fixed-bottom" id="footer">
+            <div class="pt-4 pb-3 row">
+                <div class="col-lg-12">
+                    <p>This is a ForumRec website.</p>
+                    <p>Made by Yo Jeremijenko-Conley, Jasraj Johl, Jack Lin. Contact us at <a class="text-muted" href="mailto:jsjohl@ucsd.edu">jsjohl@ucsd.edu</a></p>
+                    <p>Based on <a class="text-muted" href="https://getbootstrap.com/">Bootstrap</a>. The Lux theme was designed by <a class="text-muted" href="https://thomaspark.co/">Thomas Park</a> and released by <a class="text-muted" href="https://bootswatch.com/">Bootswatch</a>.
+                </div>
+            </div>
+        </footer>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script type="text/JavaScript" src="{{ url_for('static', filename='script.js')}}"></script>
+    </body>
+</html>

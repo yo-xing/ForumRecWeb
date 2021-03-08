@@ -194,11 +194,18 @@ def recommendations():
                                     topQList=top_questions_list)
                                     #, userQList=user_questions_data, qList=all_questions_data)
 
-# @app.route('/', methods=['GET', 'POST'])
-# def get_data():
-#     returnVal = requests.get('https://stackexchange.com/oauth/dialog?client_id=19673&scope=&redirect_uri=http://jackzlin.com/callback').content
-#     print(returnVal)
-#     return returnVal
+@app.route('/about')
+def about():
+    # Check to display login information
+    if USER_VALS:
+        userId = USER_VALS['user_id']
+    else:
+        userId = None
+    
+    userItems = USER_VALS
+
+    # Display about page
+    return flask.render_template('about.html', userId=userId, userItems=userItems)
 
 if __name__ == '__main__':
     app.run(debug=True)
