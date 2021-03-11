@@ -107,6 +107,8 @@ def main():
 #                                item_dict, threshold = 0,nrec_items = 50, show = True)
 
 
+    # write new user recommendations to new_recs.csv, include title, url, id
+
 
 if __name__ == "__main__":
     main()
