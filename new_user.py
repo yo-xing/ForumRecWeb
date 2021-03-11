@@ -32,6 +32,7 @@ def main():
     samplecsv_key = 'new_sample.csv'
     pickle_key = 'savefile.pickle'
     item_features_key = 'item_features.npz'
+    post_mappings_key = 'post_mappings.csv'
 
     client = boto3.client('s3')#, aws_access_key_id=aws_id, aws_secret_access_key=aws_secret)
     csv_obj = client.get_object(Bucket=bucket_name, Key=samplecsv_key)['Body'].read().decode('utf-8')
@@ -43,8 +44,10 @@ def main():
 
     user_indicies = np.load(s3.open('{}/{}'.format(bucket_name, user_indicies_key)))
     post_indicies = np.load(s3.open('{}/{}'.format(bucket_name, post_indicies_key)))
-    post_mappings = pd.read_csv('post_mappings.csv')
-    post_mappings.columns = [ 'ParentId', 'post_indicies']
+    post_mappings_obj = client.get_object(Bucket=bucket_name, Key=post_mappings_key)['Body'].read().decode('utf-8')
+    post_mappings = pd.read_csv(StringIO(post_mappings_obj))
+
+    post_mappings.columns = ['ParentId', 'post_indicies']
     post_mappings.index = post_mappings['ParentId']
     post_mappings = post_mappings['post_indicies']
     post_ind = lambda x: post_mappings.loc[x]
@@ -85,8 +88,8 @@ def main():
              (x for x in new.post_indicies.values))
     (new_interactions, new_weights) = dataset.build_interactions(((x[0], x[1], x[2]) for x in new.values))
     #interactions = sparse.load_npz("interactions.npz")
-    # item_features = sparse.load_npz("item_features.npz")
-    item_features = sparse.load_npz(item_features_npz)
+    item_features = sparse.load_npz("item_features.npz")
+    # item_features = sparse.load_npz(item_features_npz)
     for i in new.user_indicies.unique():
           print(i, 'mean user embedding before refitting :', np.mean(model.user_embeddings[i]))
     print(new_interactions.shape)
