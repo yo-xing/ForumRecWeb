@@ -43,6 +43,11 @@ def main():
 
     user_indicies = np.load(s3.open('{}/{}'.format(bucket_name, user_indicies_key)))
     post_indicies = np.load(s3.open('{}/{}'.format(bucket_name, post_indicies_key)))
+    post_mappings = pd.read_csv('post_mappings.csv')
+    post_mappings.columns = [ 'ParentId', 'post_indicies']
+    post_mappings.index = post_mappings['ParentId']
+    post_mappings = post_mappings['post_indicies']
+    post_ind = lambda x: post_mappings.loc[x]
 
     model_client = client.get_object(Bucket=bucket_name, Key=pickle_key)['Body'].read()
     model = pickle.loads(model_client)
@@ -60,20 +65,20 @@ def main():
     dataset.fit_partial((x for x in dummies))
     print(dataset.interactions_shape())
     # new = pd.read_csv(f)
-    print(new.columns)
-    new = new[['Score', 'Body', 'OwnerUserId', 'ParentId', 'Id', 'user_indicies',
-       'post_indicies']]
-    print(new.columns)
-    print(new[['Score','OwnerUserId', 'ParentId', 'Id', 'user_indicies',
-       'post_indicies']].values[0])
+    new['post_indicies'] = new['ParentId'].apply(post_ind)
     new_user_indicies = dict()
     for i in range(len(new.OwnerUserId.unique())):
         new_user_indicies[new.OwnerUserId.unique()[i]] = dummies[i]
     new['user_indicies'] = new.OwnerUserId.apply(lambda x: new_user_indicies[x])
     print(new['user_indicies'].values)
+    new_user_indicies = dict()
+    for i in range(len(new.OwnerUserId.unique())):
+        new_user_indicies[new.OwnerUserId.unique()[i]] = dummies[i]
+    new['user_indicies'] = new.OwnerUserId.apply(lambda x: new_user_indicies[x])
+    new = new[['user_indicies','post_indicies', 'Score', 'OwnerUserId', 'ParentId']]
     dataset.fit_partial((x for x in new.user_indicies.values),
              (x for x in new.post_indicies.values))
-    (new_interactions, new_weights) = dataset.build_interactions(((x[5], x[6], x[0]) for x in new.values))
+    (new_interactions, new_weights) = dataset.build_interactions(((x[0], x[1], x[2]) for x in new.values))
     #interactions = sparse.load_npz("interactions.npz")
     # item_features = sparse.load_npz("item_features.npz")
     item_features = sparse.load_npz(item_features_npz)
@@ -81,7 +86,7 @@ def main():
           print(i, 'mean user embedding before refitting :', np.mean(model.user_embeddings[i]))
     print(new_interactions.shape)
     model = model.fit_partial(new_interactions, item_features = item_features, sample_weight = new_weights,
-         epochs=10, num_threads=8, verbose=True)
+         epochs=10,verbose=True)
     for i in new.user_indicies.unique():
           print(i, 'mean user embedding after refitting:', np.mean(model.user_embeddings[i]))
 
