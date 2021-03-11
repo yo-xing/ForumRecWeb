@@ -100,6 +100,19 @@ def main():
 
     # with open('savefile.pickle', 'wb') as fle:
     #     pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    nq = pd.read_csv('new_questions.csv')   
+    s3_resource = boto3.resource('s3')
+    csv_buffer = StringIO()
+    
+    for i in new.user_indicies.unique():
+        scores = pd.Series(model.predict(i,nq.post_indicies.values, item_features=item_features))
+        temp = nq.copy()
+        temp['reccomendation'] = scores.values
+        # temp.to_csv(str(i) + '_recs.csv')
+
+        temp.to_csv(csv_buffer, index=False)
+        s3_resource.Object(bucket_name, 'new_recs.csv').put(Body=csv_buffer.getvalue())
     
     s3_resource = boto3.resource('s3')
     s3_resource.Object(bucket_name, pickle_key).put(Body=pickle.dumps(model))#, protocol=pickle.HIGHEST_PROTOCOL))
