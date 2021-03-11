@@ -83,7 +83,7 @@ def main():
              (x for x in new.post_indicies.values))
     (new_interactions, new_weights) = dataset.build_interactions(((x[0], x[1], x[2]) for x in new.values))
     #interactions = sparse.load_npz("interactions.npz")
-    # item_features = sparse.load_npz("item_features.npz")
+    item_features = sparse.load_npz("item_features.npz")
     # item_features = sparse.load_npz(item_features_npz)
     for i in new.user_indicies.unique():
           print(i, 'mean user embedding before refitting :', np.mean(model.user_embeddings[i]))
