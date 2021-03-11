@@ -20,6 +20,28 @@ from s3fs.core import S3FileSystem
 from io import StringIO
 
 
+def mean_recommendation_user(model, interactions,item_features, user_id,  
+                               item_dict,threshold = 0,nrec_items = 25, show = True):
+    
+    n_users, n_items = interactions.shape
+    user_x = user_id #user_dict[str(user_id)]    print(user_x)
+    scores = pd.Series(model.predict(user_x,np.arange(n_items), item_features=item_features, num_threads=4))
+    scores.index = range(n_items)
+    scores = list(pd.Series(scores.sort_values(ascending=False).index))
+    scores = [x for x in scores]
+    return_score_list = scores[0:nrec_items]
+    scores = list(pd.Series(return_score_list).apply(lambda x: item_dict[x]))
+    if show == True:
+        print ("User: " + str(user_id))
+        print("\n Recommended Items:")
+        counter = 1
+        for i in scores:
+            print(str(counter) + '- ' + str(i))
+            counter+=1
+    recs = pd.Series(return_score_list).apply(lambda x: item_dict[x])
+    recs.to_csv('recs.csv')
+    return scores
+
 def main():
 #     n = len(sys.argv)
 #     if n > 0:
@@ -65,7 +87,7 @@ def main():
     dataset = Dataset()
     dataset.fit((x for x in user_indicies),
             (x for x in post_indicies))
-    dummies = range(max(user_indicies) + 1, 870)
+    dummies = range(max(user_indicies) + 1, 876)
     dataset.fit_partial((x for x in dummies))
     print(dataset.interactions_shape())
     # new = pd.read_csv(f)
@@ -97,12 +119,24 @@ def main():
          epochs=10,verbose=True)
     for i in new.user_indicies.unique():
           print(i, 'mean user embedding after refitting:', np.mean(model.user_embeddings[i]))
+            
+    nq = pd.read_csv('new_questions.csv')   
+    
+    
+    for i in new.user_indicies.unique():
+            scores = pd.Series(model.predict(i,nq.post_indicies.values, item_features=item_features))
+            temp = nq.copy()
+            temp['reccomendation'] = scores.values
+            temp.to_csv(str(i) + '_recs.csv')
+    
 
     # with open('savefile.pickle', 'wb') as fle:
     #     pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
     
     s3_resource = boto3.resource('s3')
     s3_resource.Object(bucket, pickle_key).put(Body=pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL))
+    
+    
 
         #item_dict ={}
 #     df = filtered_q.sort_values('post_indicies').reset_index()
