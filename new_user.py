@@ -53,6 +53,7 @@ def main():
     model = pickle.loads(model_client)
 
     item_features_npz = client.get_object(Bucket=bucket_name, Key=item_features_key)['Body'].read()
+    #item_features_npz = csr_matrix(item_features_npz)
     # user_indicies = np.load('user_indicies.npy')
     # print(max(user_indicies))
     # post_indicies = np.load('post_indicies.npy')
@@ -61,7 +62,7 @@ def main():
     dataset = Dataset()
     dataset.fit((x for x in user_indicies),
             (x for x in post_indicies))
-    dummies = range(max(user_indicies) + 1, max(user_indicies)+100)
+    dummies = range(max(user_indicies) + 1, 870)
     dataset.fit_partial((x for x in dummies))
     print(dataset.interactions_shape())
     # new = pd.read_csv(f)
@@ -75,6 +76,10 @@ def main():
     for i in range(len(new.OwnerUserId.unique())):
         new_user_indicies[new.OwnerUserId.unique()[i]] = dummies[i]
     new['user_indicies'] = new.OwnerUserId.apply(lambda x: new_user_indicies[x])
+    user_indicies = np.append(user_indicies, new.user_indicies.unique())
+    #######
+    #np.save('user_indicies.npy', user_indicies)
+    #######
     new = new[['user_indicies','post_indicies', 'Score', 'OwnerUserId', 'ParentId']]
     dataset.fit_partial((x for x in new.user_indicies.values),
              (x for x in new.post_indicies.values))
@@ -92,7 +97,7 @@ def main():
 
     # with open('savefile.pickle', 'wb') as fle:
     #     pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
-
+    
     s3_resource = boto3.resource('s3')
     s3_resource.Object(bucket, pickle_key).put(Body=pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL))
 
