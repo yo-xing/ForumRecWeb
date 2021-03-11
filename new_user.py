@@ -97,7 +97,7 @@ def main():
     #     pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
 
     s3_resource = boto3.resource('s3')
-    s3_resource.Object(bucket, pickle_key).put(Body=pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL))
+    s3_resource.Object(bucket_name, pickle_key).put(Body=pickle.dumps(model))#, protocol=pickle.HIGHEST_PROTOCOL))
 
         #item_dict ={}
 #     df = filtered_q.sort_values('post_indicies').reset_index()

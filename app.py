@@ -61,7 +61,7 @@ def main():
 
         cold_df = pd.read_sql(query_top_pop, con=connection)[['id']]
         cold_df['OwnerUserId'] = pd.Series([userId for _ in range(cold_df.shape[0])])
-        cold_df['Score'] = cold_df.id.apply(lambda x: 1 if x in answers else 0)
+        cold_df['Score'] = cold_df.id.apply(lambda x: 1 if str(x) in answers else 0)
 
         # Reorder and rename columns
         cold_df.columns = ['ParentId', 'OwnerUserId', 'Score']
