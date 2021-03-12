@@ -200,7 +200,8 @@ def recommendations():
             1631055: ['Accessing Powercfg device details', 'https://superuser.com/q/1631055']
 }
     
-    data_avail = True
+    data_avail = False
+
 
     return flask.render_template('main.html', userId=userId, userItems=USER_VALS, coldStart=is_cold, userData=data_avail,
                                     topQList=top_questions_list, userQList=user_questions_data, qList=all_questions_data)
