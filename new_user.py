@@ -55,8 +55,8 @@ def main():
     model_client = client.get_object(Bucket=bucket_name, Key=pickle_key)['Body'].read()
     model = pickle.loads(model_client)
 
-    item_features_npz = client.get_object(Bucket=bucket_name, Key=item_features_key)['Body'].read()
-    #item_features_npz = csr_matrix(item_features_npz)
+    # item_features_npz = client.get_object(Bucket=bucket_name, Key=item_features_key)['Body'].read()
+    # item_features_npz = csr_matrix(item_features_npz)
     # user_indicies = np.load('user_indicies.npy')
     # print(max(user_indicies))
     # post_indicies = np.load('post_indicies.npy')
@@ -114,8 +114,9 @@ def main():
         temp.to_csv(csv_buffer, index=False)
         s3_resource.Object(bucket_name, 'new_recs.csv').put(Body=csv_buffer.getvalue())
     
-    s3_resource = boto3.resource('s3')
-    s3_resource.Object(bucket_name, pickle_key).put(Body=pickle.dumps(model))#, protocol=pickle.HIGHEST_PROTOCOL))
+
+    # s3_resource = boto3.resource('s3')
+    # s3_resource.Object(bucket_name, pickle_key).put(Body=pickle.dumps(model))#, protocol=pickle.HIGHEST_PROTOCOL))
 
         #item_dict ={}
 #     df = filtered_q.sort_values('post_indicies').reset_index()
