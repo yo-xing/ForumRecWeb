@@ -20,28 +20,6 @@ from s3fs.core import S3FileSystem
 from io import StringIO
 
 
-def mean_recommendation_user(model, interactions,item_features, user_id,  
-                               item_dict,threshold = 0,nrec_items = 25, show = True):
-    
-    n_users, n_items = interactions.shape
-    user_x = user_id #user_dict[str(user_id)]    print(user_x)
-    scores = pd.Series(model.predict(user_x,np.arange(n_items), item_features=item_features, num_threads=4))
-    scores.index = range(n_items)
-    scores = list(pd.Series(scores.sort_values(ascending=False).index))
-    scores = [x for x in scores]
-    return_score_list = scores[0:nrec_items]
-    scores = list(pd.Series(return_score_list).apply(lambda x: item_dict[x]))
-    if show == True:
-        print ("User: " + str(user_id))
-        print("\n Recommended Items:")
-        counter = 1
-        for i in scores:
-            print(str(counter) + '- ' + str(i))
-            counter+=1
-    recs = pd.Series(return_score_list).apply(lambda x: item_dict[x])
-    recs.to_csv('recs.csv')
-    return scores
-
 def main():
 #     n = len(sys.argv)
 #     if n > 0:
@@ -134,9 +112,13 @@ def main():
     #     pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
     
     s3_resource = boto3.resource('s3')
+<<<<<<< HEAD
     s3_resource.Object(bucket, pickle_key).put(Body=pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL))
     
     
+=======
+    s3_resource.Object(bucket_name, pickle_key).put(Body=pickle.dumps(model))#, protocol=pickle.HIGHEST_PROTOCOL))
+>>>>>>> b7a0ddfa8618e3b7f01d6741ed10415d7db6ae78
 
         #item_dict ={}
 #     df = filtered_q.sort_values('post_indicies').reset_index()
@@ -145,6 +127,8 @@ def main():
 #     mean_recommendation_user(model, interactions,  item_features, 3,
 #                                item_dict, threshold = 0,nrec_items = 50, show = True)
 
+
+    # write new user recommendations to new_recs.csv, include title, url, id
 
 
 if __name__ == "__main__":
