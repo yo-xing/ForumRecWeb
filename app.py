@@ -160,6 +160,71 @@ def callback():
 
     return flask.render_template('main.html', userId=userId, userItems=USER_VALS)
 
+@app.route('/recommendedQuestions')
+def recommendedQuestions():
+    userId = USER_VALS['user_id']
+    
+    query_cold_start = """
+    SELECT COLD
+    FROM USERS
+    WHERE USER_ID = {0}
+    """.format(userId)
+
+    is_cold = pd.read_sql(query_cold_start, con=connection).cold[0] 
+
+    # if cold_users.cold: 
+    #     pass
+    #grab user from database 
+    query_top_pop = """
+    SELECT *
+    FROM COLDQUESTIONS
+    """
+
+
+    # get csv from s3
+    bucket_name = 'forumrecbucket'
+    object_key = 'new_recs.csv'
+    client = boto3.client('s3')
+    csv_obj = client.get_object(Bucket=bucket_name, Key=object_key)['Body'].read().decode('utf-8')
+    recQuestions = pd.read_csv(StringIO(csv_obj))
+    print(recQuestions.shape)
+
+    recQuestions = recQuestions.set_index('post_id')
+    recQuestions = recQuestions[['title', 'link']]
+    recQuestions = recQuestions[~recQuestions.index.duplicated(keep='first')]
+
+
+    questions_final = recQuestions.head(20)
+    qList = list(questions_final.index)
+    all_questions_data = dict()
+
+    for q in qList:
+        all_questions_data[q] = questions_final.loc[q].values.tolist()
+
+    top_questions_list = pd.read_sql(query_top_pop, con=connection).sample(100).values.tolist()
+    # print(top_questions_list)
+    user_questions_data = {'New': qList, 'Previous':[]}
+    # all_questions_data = {1298302: ['How to access my Raspberry Pi remotely?', 'https://superuser.com/questions/1298302'], 
+    #         1629649: ['Recovering a deleted text message on Android', 'https://superuser.com/questions/1629649'],
+    #         1629646: ['What is the regex to find and move', 'https://superuser.com/questions/1629646'], 
+    #         1627819: ['How to open files of unknown extensions?', 'https://superuser.com/q/1627819'],
+    #         1617994: ['PC can&#39;t certain detect hardware in driver software', 'https://superuser.com/q/1617994'],
+    #         1617973: ['Makes files using filenames stored in a textfile list', 'https://superuser.com/q/1617973'],
+    #         1616298: ['How can I extract the names of games of which I added shortcuts to Steam from a shortcuts.vdf file?', 'https://superuser.com/q/1616298'],
+    #         1622193: ['How to add Anacond&#39;s python to path and run it inside a given terminal', 'https://superuser.com/q/1622193'],
+    #         1631055: ['Accessing Powercfg device details', 'https://superuser.com/q/1631055']
+# }
+    
+    data_avail = True
+    is_cold = False
+
+
+    
+
+
+    return flask.render_template('main.html', userId=userId, userItems=USER_VALS, coldStart=is_cold, userData=data_avail,
+                                    topQList=top_questions_list, userQList=user_questions_data, qList=all_questions_data)
+
 @app.route('/recommendations')
 def recommendations():
     userId = USER_VALS['user_id']
@@ -183,7 +248,7 @@ def recommendations():
     # If not cold user, get their data and write it into the manner commented out below
 
     top_questions_list = pd.read_sql(query_top_pop, con=connection).sample(100).values.tolist()
-    user_questions_data = {'New': [1298302, 162964, 1627819,
+    user_questions_data = {'New': [1298302, 1629649, 1627819,
                                     1617994,
                                     1617973,
                                     1616298,
@@ -202,10 +267,18 @@ def recommendations():
     
     data_avail = False
 
+    # get csv from s3
+    # csv_obj = client.get_object(Bucket=bucket_name, Key=object_key)['Body'].read().decode('utf-8')
+    # df = pd.read_csv(StringIO(csv_obj))
+    
+
 
     return flask.render_template('main.html', userId=userId, userItems=USER_VALS, coldStart=is_cold, userData=data_avail,
                                     topQList=top_questions_list, userQList=user_questions_data, qList=all_questions_data)
                                 
+
+
+
 
 @app.route('/about')
 def about():
