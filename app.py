@@ -43,7 +43,14 @@ app = flask.Flask(__name__, template_folder='templates')
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if flask.request.method == 'GET':
-        return flask.render_template('main.html')
+        # Check to display login information
+        if USER_VALS:
+            userId = USER_VALS['user_id']
+        else:
+            userId = None
+
+        userItems = USER_VALS
+        return flask.render_template('main.html', userId=userId, userItems=userItems)
     
     if flask.request.method == 'POST':
         answers = flask.request.form.getlist("question")
@@ -81,7 +88,7 @@ def main():
         
         new_user.main()
         
-        return flask.render_template('main.html', userId=userId, userItems=USER_VALS, ans=answers)
+        return flask.redirect(flask.url_for('recommendedQuestions')) #flask.render_template('main.html', userId=userId, userItems=USER_VALS)
 
     # Run API Script (Or Run on website start)
     # Send API Data to Firebase
@@ -217,10 +224,6 @@ def recommendedQuestions():
     
     data_avail = True
     is_cold = False
-
-
-    
-
 
     return flask.render_template('main.html', userId=userId, userItems=USER_VALS, coldStart=is_cold, userData=data_avail,
                                     topQList=top_questions_list, userQList=user_questions_data, qList=all_questions_data)
