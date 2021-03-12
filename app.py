@@ -183,16 +183,28 @@ def recommendations():
     # If not cold user, get their data and write it into the manner commented out below
 
     top_questions_list = pd.read_sql(query_top_pop, con=connection).sample(100).values.tolist()
-    # user_questions_data = {'New': [1298302, 1629649], 'Previous':[1629646]}
-    # all_questions_data = {1298302: ['How to access my Raspberry Pi remotely?', 'https://superuser.com/questions/1298302'], 
-    #         1629649: ['Recovering a deleted text message on Android', 'https://superuser.com/questions/1629649'],
-    #         1629646: ['What is the regex to find and move', 'https://superuser.com/questions/1629646']}
+    user_questions_data = {'New': [1298302, 162964, 1627819,
+                                    1617994,
+                                    1617973,
+                                    1616298,
+                                    1622193,
+                                    1631055], 'Previous':[1629646]}
+    all_questions_data = {1298302: ['How to access my Raspberry Pi remotely?', 'https://superuser.com/questions/1298302'], 
+            1629649: ['Recovering a deleted text message on Android', 'https://superuser.com/questions/1629649'],
+            1629646: ['What is the regex to find and move', 'https://superuser.com/questions/1629646'], 
+            1627819: ['How to open files of unknown extensions?', 'https://superuser.com/q/1627819'],
+            1617994: ['PC can&#39;t certain detect hardware in driver software', 'https://superuser.com/q/1617994'],
+            1617973: ['Makes files using filenames stored in a textfile list', 'https://superuser.com/q/1617973'],
+            1616298: ['How can I extract the names of games of which I added shortcuts to Steam from a shortcuts.vdf file?', 'https://superuser.com/q/1616298'],
+            1622193: ['How to add Anacond&#39;s python to path and run it inside a given terminal', 'https://superuser.com/q/1622193'],
+            1631055: ['Accessing Powercfg device details', 'https://superuser.com/q/1631055']
+}
     
-    data_avail = False
+    data_avail = True
 
     return flask.render_template('main.html', userId=userId, userItems=USER_VALS, coldStart=is_cold, userData=data_avail,
-                                    topQList=top_questions_list)
-                                    #, userQList=user_questions_data, qList=all_questions_data)
+                                    topQList=top_questions_list, userQList=user_questions_data, qList=all_questions_data)
+                                
 
 @app.route('/about')
 def about():

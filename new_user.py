@@ -54,9 +54,10 @@ def main():
 
     model_client = client.get_object(Bucket=bucket_name, Key=pickle_key)['Body'].read()
     model = pickle.loads(model_client)
-
-    item_features_npz = client.get_object(Bucket=bucket_name, Key=item_features_key)['Body'].read()
-    #item_features_npz = csr_matrix(item_features_npz)
+    print('user_indicies length:  ', len(user_indicies))
+    print('post_indicies length:  ', len(post_indicies))
+    # item_features_npz = client.get_object(Bucket=bucket_name, Key=item_features_key)['Body'].read()
+    # item_features_npz = csr_matrix(item_features_npz)
     # user_indicies = np.load('user_indicies.npy')
     # print(max(user_indicies))
     # post_indicies = np.load('post_indicies.npy')
@@ -79,7 +80,7 @@ def main():
     for i in range(len(new.OwnerUserId.unique())):
         new_user_indicies[new.OwnerUserId.unique()[i]] = dummies[i]
     new['user_indicies'] = new.OwnerUserId.apply(lambda x: new_user_indicies[x])
-    user_indicies = np.append(user_indicies, new.user_indicies.unique())
+    #user_indicies = np.append(user_indicies, new.user_indicies.unique())
     #######
     #np.save('user_indicies.npy', user_indicies)
     #######
@@ -87,8 +88,10 @@ def main():
     dataset.fit_partial((x for x in new.user_indicies.values),
              (x for x in new.post_indicies.values))
     (new_interactions, new_weights) = dataset.build_interactions(((x[0], x[1], x[2]) for x in new.values))
+    print(new_interactions.shape)
     #interactions = sparse.load_npz("interactions.npz")
     item_features = sparse.load_npz("item_features.npz")
+    print(item_features.shape)
     # item_features = sparse.load_npz(item_features_npz)
     for i in new.user_indicies.unique():
           print(i, 'mean user embedding before refitting :', np.mean(model.user_embeddings[i]))
@@ -110,8 +113,10 @@ def main():
 
     # with open('savefile.pickle', 'wb') as fle:
     #     pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
-    
+
+    nq = pd.read_csv('new_questions.csv')   
     s3_resource = boto3.resource('s3')
+<<<<<<< HEAD
 <<<<<<< HEAD
     s3_resource.Object(bucket, pickle_key).put(Body=pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL))
     
@@ -119,6 +124,22 @@ def main():
 =======
     s3_resource.Object(bucket_name, pickle_key).put(Body=pickle.dumps(model))#, protocol=pickle.HIGHEST_PROTOCOL))
 >>>>>>> b7a0ddfa8618e3b7f01d6741ed10415d7db6ae78
+=======
+    csv_buffer = StringIO()
+    
+    for i in new.user_indicies.unique():
+        scores = pd.Series(model.predict(i,nq.post_indicies.values, item_features=item_features))
+        temp = nq.copy()
+        temp['reccomendation'] = scores.values
+        # temp.to_csv(str(i) + '_recs.csv')
+
+        temp.to_csv(csv_buffer, index=False)
+        s3_resource.Object(bucket_name, 'new_recs.csv').put(Body=csv_buffer.getvalue())
+    
+
+    # s3_resource = boto3.resource('s3')
+    # s3_resource.Object(bucket_name, pickle_key).put(Body=pickle.dumps(model))#, protocol=pickle.HIGHEST_PROTOCOL))
+>>>>>>> db2ccd3e86adbda6fe3767ecb2bdb1e003fc5155
 
         #item_dict ={}
 #     df = filtered_q.sort_values('post_indicies').reset_index()
