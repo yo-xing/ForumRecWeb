@@ -115,7 +115,6 @@ def login():
 
 @app.route('/callback')
 def callback():
-    print('Check')
 
     superuser = requests_client.OAuth2Session(CLIENT_ID)
     token = superuser.fetch_token(
